@@ -2,6 +2,11 @@ import nltk
 import re
 from collections import OrderedDict
 
+import matplotlib.pyplot as plt
+import math
+import numpy as np
+
+
 
 def readText(fn):
 	f = open(fn, "r")		
@@ -32,12 +37,39 @@ def numCapital(word):
 			n += 1
 	return n
 
+def getProportion(mylist):
+	proportionList = list()
+	total = sum(mylist)
+	for m in mylist:
+		proportionList.append(m/float(total))
+	return sorted(proportionList)
+
+
+def plotLogLog(mydict):
+	freqList = sorted(mydict.values())
+
+	sumFreq = sum(freqList)
+
+	getProportion(freqList)
+	freqCount = dict.fromkeys(set(freqList),0)
+	for freq in freqList:
+		freqCount[freq] += 1
+
+	x = list(freqList)
+	y = list()
+	for freq in freqList:
+		y.append(freqCount[freq]/float(sumFreq))
+
+
+	plt.loglog(x,y)
+	plt.show()
 
 def countWordFrequency(tokenList):
-	tokenSet = list(set(tokenList))
+	tokenSet = list(set(tokenList)-set(stopword))
 	frequencyDict = dict.fromkeys(tokenSet,0)
 	for token in tokenList:
-		frequencyDict[token] = frequencyDict[token]+1
+		if token not in stopword:
+			frequencyDict[token] = frequencyDict[token] + 1
 	return frequencyDict
 
 def plusOne(mydict,key):
@@ -50,9 +82,15 @@ def plusOne(mydict,key):
 blogText = readText("blog.txt")
 blogToken = nltk.word_tokenize(blogText)
 blogTag = nltk.pos_tag(blogToken)
-blogToken = removeNonAlphaNumeric(blogToken)
+#blogToken = removeNonAlphaNumeric(blogToken)
 blogFreq = countWordFrequency(blogToken)
+plotLogLog(blogFreq)
+
+
 print "vocabulary size: ",len(blogFreq.keys())
+
+
+
 
 n_stop = 0
 n_capital = 0
@@ -156,8 +194,11 @@ total_char = 0
 speechText = readText("congress_speech.txt")
 speechToken = nltk.word_tokenize(speechText)
 speechTag = nltk.pos_tag(speechToken)
-speechToken = removeNonAlphaNumeric(speechToken)
+#speechToken = removeNonAlphaNumeric(speechToken)
 speechFreq = countWordFrequency(speechToken)
+plotLogLog(blogFreq)
+
+
 print "vocabulary size: ",len(speechFreq.keys())
 
 n_stop = 0
