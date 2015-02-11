@@ -46,7 +46,7 @@ def getProportion(mylist):
 
 
 def plotLogLog(mydict):
-	freqList = sorted(mydict.values())
+	freqList = mydict.values()
 
 	sumFreq = sum(freqList)
 
@@ -61,7 +61,19 @@ def plotLogLog(mydict):
 		y.append(freqCount[freq]/float(sumFreq))
 
 
-	plt.loglog(x,y)
+	#plt.loglog(x,y)
+	#plt.plot(x,y, color='blue', lw=2)
+
+
+	fig = plt.figure()
+	ax = plt.gca()
+	#ax.scatter(x ,y , c='blue', alpha=0.05, edgecolors='none')
+	#fig = plt.figure()
+	ax.plot(x ,y, 'o', c='blue', alpha=0.5, markeredgecolor='none')
+
+
+	ax.set_yscale('log')
+	ax.set_xscale('log')
 	plt.show()
 
 def countWordFrequency(tokenList):
@@ -81,6 +93,7 @@ def plusOne(mydict,key):
 
 blogText = readText("blog.txt")
 blogToken = nltk.word_tokenize(blogText)
+blogToken = [token.lower() for token in blogToken]
 blogTag = nltk.pos_tag(blogToken)
 #blogToken = removeNonAlphaNumeric(blogToken)
 blogFreq = countWordFrequency(blogToken)
@@ -123,7 +136,7 @@ for item in blogTag:
 		n_adj += 1
 		plusOne(adj_dict,item[0])
 
-	elif item[1] == "IN":
+	elif item[1] == "RB":
 		n_adv += 1
 		plusOne(adv_dict,item[0])
 
@@ -193,10 +206,11 @@ n_capital = 0
 total_char = 0
 speechText = readText("congress_speech.txt")
 speechToken = nltk.word_tokenize(speechText)
+speechToken = [token.lower() for token in speechToken]
 speechTag = nltk.pos_tag(speechToken)
 #speechToken = removeNonAlphaNumeric(speechToken)
 speechFreq = countWordFrequency(speechToken)
-plotLogLog(blogFreq)
+plotLogLog(speechFreq)
 
 
 print "vocabulary size: ",len(speechFreq.keys())
@@ -216,24 +230,12 @@ n_adv = 0
 n_adj = 0
 n_verb = 0
 n_pron = 0
-for item in speechTag:
-	if item[1] == "NN":
-		n_noun += 1
-	elif item[1] == "JJ":
-		n_adj += 1
-	elif item[1] == "IN":
-		n_adv += 1
-	elif item[1] == "PRP":
-		n_pron += 1
-	elif item[1].startswith("VB"):
-		n_verb += 1
-
 noun_dict = dict()
 adv_dict = dict()
 adj_dict = dict()
 verb_dict = dict()
 pron_dict = dict()
-for item in blogTag:
+for item in speechTag:
 	if item[1] == "NN":
 		n_noun += 1
 		plusOne(noun_dict,item[0])
@@ -242,7 +244,7 @@ for item in blogTag:
 		n_adj += 1
 		plusOne(adj_dict,item[0])
 
-	elif item[1] == "IN":
+	elif item[1] == "RB":
 		n_adv += 1
 		plusOne(adv_dict,item[0])
 
