@@ -3,7 +3,6 @@ import nltk
 from sklearn import svm
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_selection import VarianceThreshold
 
 trainname = 'train.csv'
 testname = 'test.csv'
@@ -38,8 +37,7 @@ with open(trainname, 'rb') as trainfile:
 	# Initialize the "CountVectorizer" object, which is scikit-learn's
 	# bag of words tool.  
 
-	vectorizer = CountVectorizer(analyzer = "word", tokenizer = None, preprocessor = None, stop_words ='english', max_features = 1000,lowercase=True,encoding='ascii') 
-
+	vectorizer = CountVectorizer(analyzer = "word", tokenizer = None, preprocessor = None, stop_words ='english', max_features = 60,lowercase=True,encoding='ascii') 
 	#vectorizer = CountVectorizer(analyzer = "word",stop_words ='english', max_features = 80)
 
 	# fit_transform() does two functions: First, it fits the model
@@ -50,26 +48,22 @@ with open(trainname, 'rb') as trainfile:
 	#train_data_features = vectorizer.transform(content)
 	print "Vectorization finished"
 
-	
-	# feature selection
-	sel = VarianceThreshold(threshold=(.8 * (1 - .8)))
-	contentVectors = sel.fit_transform(contentVectors)
-	#print len(contentVectors[0])
-
-
 
 	#clf = svm.SVC(kernel='rbf', C=1e3, gamma=0.1)
 	#clf = svm.SVC(kernel='linear', C=1e3)
-	clf = svm.LinearSVC(C=1)
+	clf = svm.LinearSVC(C=1.0)
 	clf.fit(np.array(contentVectors),np.array(label))
-	#clf.fit(np.array(contentVectors[:1000]),np.array(label[:1000]))
 
+	'''
 	predicted_result = clf.predict(np.array(contentVectors[1001:]))
 	print predicted_result
 	print precision(predicted_result,label[1001:])
+	'''
 
 
-	#print "Training finished"
+
+
+	print "Training finished"
 
 	with open(testname, 'rb') as testfile:
 		#spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
@@ -85,7 +79,6 @@ with open(trainname, 'rb') as trainfile:
 
 	print "Labeling starteded"
 	newVector = vectorizer.transform(finaltest).toarray()
-	newVector = sel.transform(newVector)
 	predicted_label = clf.predict(np.array(newVector))
 	print "Labeling finished"
 
